@@ -1,0 +1,42 @@
+p, span, div, h1, h2, h3, h4, h5, td, th {
+    font-family: 'Times New Roman', Times, serif;
+}
+p, span, div, th, td {
+    font-size: 17px;
+}
+
+.project-table {
+    min-height: 65vh;
+    height: max-content;
+}
+.card {
+    width: 250px;
+    min-height: 238px;
+    height: max-content;
+}
+.card:hover {
+    background-color: rgb(237, 240, 243) !important;
+}
+.w-35 {
+    width: 35%;
+}
+
+@media (width < 769px) {
+    p, span, div, th, td {
+        font-size: 14px;
+    }
+    h4 {
+        font-size: 20px;
+    }
+    .w-35 {
+        width: 75%;
+    }
+    .button-search {
+        display: none;
+    }
+    .card {
+        width: 195px;
+        min-height: 190px;
+        height: max-content;
+    }
+}

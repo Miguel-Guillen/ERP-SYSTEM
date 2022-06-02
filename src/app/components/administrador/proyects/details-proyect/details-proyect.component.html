@@ -1,0 +1,504 @@
+<div class="container-fluid bg-light overflow-hidden">
+    <div class="row">
+
+        <div class="col-2 px-0">
+            <app-sidebar></app-sidebar>
+        </div>
+
+        <div class="col-10 px-0">
+            <ng-container *ngIf="user.rol == 1; else noAdmin">
+                <div class="row d-flex justify-content-evenly align-items-center proyect-form my-5">
+
+                    <div class="col-10 col-lg-6 bg-white border border-3 shadow-sm py-3 px-4">
+                        <div class="row">
+                            <div class="col-12 d-flex border-bottom border-2 pb-2">
+                                <h5 class="fw-bold flex-grow-1 my-auto">{{project.name}}</h5>
+                                <div *ngIf="project.blnActivo === 'Activo' ">
+                                    <button class="btn btn-outline-success me-2" (click)="openModal(updateModal)"
+                                    >Editar</button>
+                                    <button class="btn btn-outline-danger" (click)="openModal(deleteModal)"
+                                    >Borrar</button>
+                                </div>
+                                <ng-container *ngIf="project.blnActivo === 'Baja' ">
+                                    <button class="btn btn-outline-info me-2" (click)="openModal(reactivatedModal)"
+                                    >Restaurar</button>
+                                </ng-container>
+                            </div>
+                            <div class="col-6 p-3">
+                                <p class="my-1">Descripcion: {{project.description}}</p>
+                            </div>
+                            <div class="col-6 p-3">
+                                <p class="my-1" [ngClass]="{'text-warning': project.estatus == 'Pausado',
+                                'text-success': project.estatus == 'Cerrado', 
+                                'text-info': project.estatus == 'En progreso' }">
+                                    Estado: {{project.estatus}}
+                                </p>
+                                <p *ngIf="project.blnActivo === 'Baja' " class="text-danger my-1">
+                                    Proyecto dado de baja</p>
+                                <p class="my-1">Fecha de inicio: {{project.dateStart | date: format }}</p>
+                                <p class="my-1">Fecha de cierre: {{project.dateEnd | date: format }}</p>
+                            </div>
+                            <div class="col mt-4">
+                                <button class="btn btn-outline-success" [routerLink]="['/project']">
+                                    <span class="me-1"><i class="far fa-arrow-alt-circle-left"></i></span>Volver
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-10 col-lg-5 bg-white border border-3 shadow-sm p-3 m-0">
+                        <div class="row">
+                            <div class="col-12 d-flex border-bottom border-2 pb-2 px-4">
+                                <h5 class="fw-bold flex-grow-1 my-auto">Tareas asignadas</h5>
+                                <button class="btn btn-outline-primary" (click)="openModal(addTaskModal)"
+                                >Nueva tarea</button>
+                            </div>
+                            <div *ngIf="listTasks.length > 0" class="mt-3">
+                                <ngb-accordion [closeOthers]="true" activeIds="static-1">
+                                    <ngb-panel *ngFor="let task of listTasks" [title]="task.title">
+                                      <ng-template ngbPanelContent>
+                                            <div class="row">
+                                                <div class="col-12 mb-3 d-flex">
+                                                    <p class="flex-grow-1 my-auto pe-2">Titulo: {{task.title}}</p>
+                                                    <button class="btn btn-outline-success me-1"
+                                                    (click)="searchTask(task.id); openModal(addTaskModal)">Editar</button>
+                                                    <button class="btn btn-outline-danger"
+                                                    (click)="openModal(deleteTaskModal); idTask = task.id">Borrar</button>
+                                                </div>
+                                                <div class="col-6">
+                                                    <p>Descripcion: {{task.description}}</p>
+                                                    <p>Requerimientos: {{task.requeriments}}</p>
+                                                </div>
+                                                <div class="col-6">
+                                                    <p [ngClass]="{'text-success': task.priority == 'Bajo',
+                                                    'text-warning': task.priority == 'Medio', 
+                                                    'text-danger': task.priority == 'Alto'}">Prioridad: {{task.priority}}</p>
+                                                    <p>Estado: {{task.estatus}}</p>
+                                                    <p>Responsable: {{task.responsable}}</p>
+                                                    <p>Fecha de vencimiento: {{task.dueDate | date: format}}</p>
+                                                </div>
+                                            </div>
+                                      </ng-template>
+                                    </ngb-panel>
+                                </ngb-accordion>
+                            </div>
+                            <ng-container *ngIf="listTasks.length == 0">
+                                <div class="mt-3 px-4">
+                                    <h4>No se encuentran tareas asignadas en este proyecto</h4>
+                                    <h5>Haga clic en el boton 
+                                        <a class="fw-bold text-info h5" (click)="openModal(addTaskModal)">Nueva tarea</a>
+                                    </h5>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+
+                    <div class="col-9 col-lg-5 bg-white border border-3 shadow-sm">
+                        <div class="row d-flex align-items-center px-3 py-2 border-bottom border-4">
+                            <h5 class="col-10 text-info fw-bold">Integrantes</h5>
+                            <button class="col-2 btn btn-outline-secondary float-end"
+                            (click)="openModal(participants)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                        <div *ngFor="let participant of project.participants" class="border shadow-sm 
+                        rounded my-2 p-2">
+                            <div class="row">
+                                <div class="col-4 ps-4">
+                                    <img class="w-35" src="../../../../../assets/img/user.png" alt="">
+                                </div>
+                                <div class="col-8">
+                                    <p>{{ participant }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- Modal edit -->
+                    <ng-template #updateModal let-modal>
+                        <div class="modal-header bg-success text-white">
+                          <h5 class="modal-title">Modificar el proyecto</h5>
+                          <button class="btn-close" type="button" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form [formGroup]="editForm" (ngSubmit)="editProyect(editForm.value)">
+                                <div class="alert alert-danger" role="alert" *ngIf="formValid === false && editForm.valid === false">
+                                    Datos incompletos
+                                </div>
+                                <div class="row my-2">
+                                    <div class="col-6">
+                                        <small class="form-label">Nombre*</small>
+                                        <input [ngClass]="{'border-bottom border-danger': formValid === false && name.errors}" 
+                                        formControlName="name" class="form-control" type="text" 
+                                        placeholder="Inserte el nombre" maxlength="75">
+                                        <ng-container *ngFor="let validation of validation_messages.name">
+                                            <div *ngIf="name.hasError(validation.type) && name.dirty" 
+                                            class="text-danger" >{{validation.message}}</div>
+                                        </ng-container>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="form-label">Estado*</small>
+                                        <select [ngClass]="{'border-bottom border-danger': formValid === false && estatus.errors}"
+                                        formControlName="estatus" class="form-select">
+                                            <option *ngFor="let estatus of typeEstatus" [value]="estatus">
+                                                {{ estatus }}
+                                            </option>
+                                        </select>
+                                        <ng-container *ngFor="let validation of validation_messages.estatus">
+                                            <div *ngIf="estatus.hasError(validation.type) && estatus.dirty"
+                                            class="text-danger mb-2">{{validation.message}}</div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                                <div class="row my-2">
+                                    <div class="col-6">
+                                        <small class="form-label">Descripcion*</small>
+                                        <textarea [ngClass]="{'border-bottom border-danger': formValid === false && description.errors}" 
+                                        formControlName="description" class="form-control" type="text" 
+                                        placeholder="Inserte la descripcion" rows="5" cols="30" maxlength="300"></textarea>
+                                        <ng-container *ngFor="let validation of validation_messages.description">
+                                            <div *ngIf="description.hasError(validation.type) && description.dirty" 
+                                            class="text-danger">{{validation.message}}</div>
+                                        </ng-container>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="mb-2">
+                                            <small class="form-label">Fecha Inicio*</small>
+                                            <input [ngClass]="{'border-bottom border-danger': formValid === false && dateStart.errors}" 
+                                            formControlName="dateStart" class="form-control" type="date">
+                                            <ng-container *ngFor="let validation of validation_messages.dateStart">
+                                                <div class="text-danger" *ngIf="dateStart.hasError(validation.type) && 
+                                                dateStart.dirty">{{validation.message}}</div>
+                                            </ng-container>
+                                        </div>
+                                        <div>
+                                            <small class="form-label">Fecha Terminacion*</small>
+                                            <input [ngClass]="{'border-bottom border-danger': formValid === false && dateEnd.errors}" 
+                                            formControlName="dateEnd" class="form-control" type="date">
+                                            <ng-container *ngFor="let validation of validation_messages.dateEnd">
+                                                <div class="text-danger" *ngIf="dateEnd.hasError(validation.type) && 
+                                                dateEnd.dirty">{{validation.message}}</div>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="float-right mt-3">
+                                    <button class="btn btn-outline-danger me-2" (click)="modal.close('Button click'); reset()" 
+                                    type="button">Cancelar</button>
+                                    <button *ngIf="send === false; else noSend" class="btn btn-outline-success"
+                                    type="submit">Guardar cambios</button>
+                                </div>
+                            </form>
+                        </div>
+                    </ng-template>
+    
+                    <!-- Modal delete -->
+                    <ng-template #deleteModal let-modal>
+                        <div class="modal-header bg-danger text-white">
+                          <h5 class="modal-title">¿Esta seguro de borrar el proyecto?</h5>
+                          <button class="btn-close" type="button" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>El proyecto quedara dado de baja y podra ser recuperado antes de que sea
+                                eliminado en 30 dias</p>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="mt-3 float-right">
+                                <button class="btn btn-outline-secondary me-2" (click)="reset(); modal.dismiss('Button click')"
+                                type="button">Cancelar</button>
+                                <button class="btn btn-outline-danger" (click)="deleteProyect('Baja'); modal.close('Save click')" 
+                                type="submit">Borrar</button>
+                            </div>
+                        </div>
+                    </ng-template>
+    
+                    <!-- Modal reactivate -->
+                    <ng-template #reactivatedModal let-modal>
+                        <div class="modal-header bg-info text-white">
+                          <h5 class="modal-title">Desea restaurar el proyecto?</h5>
+                          <button class="btn-close" type="button" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>El proyecto sera restaurado y podra seguir usandose</p>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="mt-3 float-right">
+                                <button class="btn btn-outline-secondary me-2" (click)="reset(); modal.dismiss('Button click')"
+                                type="button">Cancelar</button>
+                                <button class="btn btn-outline-info" (click)="deleteProyect('Activo'); modal.close('Save click')" 
+                                type="submit">Restaurar</button>
+                            </div>
+                        </div>
+                    </ng-template>
+    
+                    <!-- Modal addTask -->
+                    <ng-template #addTaskModal let-modal>
+                        <div [ngClass]="edit === false ? 'bg-white' : 'bg-success' " class="modal-header">
+                          <h5 *ngIf="edit === false" class="modal-title text-info">Nueva tarea</h5>
+                          <h5 *ngIf="edit === true" class="modal-title text-white">Modificar tarea</h5>
+                          <button class="btn-close" type="button" aria-label="Close" 
+                          (click)="modal.dismiss('Cross click'); reset()"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form [formGroup]="taskForm" class="px-2">
+                                <div class="alert alert-danger" role="alert" *ngIf="formValid === false && taskForm.valid === false">
+                                    Datos incompletos
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-12">
+                                        <small class="form-label">Titulo*</small>
+                                        <input [ngClass]="{'border-bottom border-danger': formValid === false && title.errors}" 
+                                        formControlName="title" class="form-control" type="text" maxlength="70">
+                                        <ng-container *ngFor="let validation of validation_messages2.title">
+                                            <div *ngIf="title.hasError(validation.type) && title.dirty" 
+                                            class="text-danger">{{validation.message}}</div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                                <div class="row my-2">
+                                    <div class="col-6">
+                                        <small class="form-label">Descripcion*</small>
+                                        <textarea [ngClass]="{'border-bottom border-danger': formValid === false && description2.errors}" 
+                                        formControlName="description" class="form-control" cols="30" rows="4"></textarea>
+                                        <ng-container *ngFor="let validation of validation_messages2.description">
+                                            <div *ngIf="description2.hasError(validation.type) && description2.dirty" 
+                                            class="text-danger">{{validation.message}}</div>
+                                        </ng-container>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="form-label">Requisitos*</small>
+                                        <textarea [ngClass]="{'border-bottom border-danger': formValid === false && requeriments.errors}" 
+                                        formControlName="requeriments" class="form-control" cols="30" rows="4"></textarea>
+                                        <ng-container *ngFor="let validation of validation_messages2.requeriments">
+                                            <div *ngIf="requeriments.hasError(validation.type) && 
+                                            requeriments.dirty" class="text-danger">{{validation.message}}</div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                                <div class="row my-2">
+                                    <div class="col-6">
+                                        <small class="form-label">Prioridad*</small>
+                                        <select [ngClass]="{'border-bottom border-danger': formValid === false &&
+                                        (priority.errors || priority.value == 'Seleccionar')}" 
+                                        formControlName="priority" class="form-select custom-select">
+                                            <option *ngFor="let priority of typePriority" [value]="priority">
+                                                {{ priority }}
+                                            </option>
+                                        </select>
+                                        <ng-container *ngFor="let validation of validation_messages2.priority">
+                                            <div *ngIf="priority.hasError(validation.type) && priority.touched" 
+                                            class="text-danger">{{validation.message}}</div>
+                                        </ng-container>
+                                        <div *ngIf="priority.value == 'Seleccionar' && priority.touched"
+                                        class="text-danger ms-2">Seleccione la prioridad de la tarea</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="form-label">Estatus*</small>
+                                        <select [ngClass]="{'border-bottom border-danger': formValid === false && 
+                                        (estatus2.errors || estatus2.value == 'Seleccionar')}" 
+                                        formControlName="estatus" class="form-select custom-select">
+                                            <option *ngFor="let estatus of typeEstatus2" [value]="estatus">
+                                                {{ estatus }}
+                                            </option>
+                                        </select>
+                                        <ng-container *ngFor="let validation of validation_messages2.estatus">
+                                            <div *ngIf="estatus2.hasError(validation.type) && estatus2.dirty"
+                                            class="text-danger">{{validation.message}}</div>
+                                        </ng-container>
+                                        <div *ngIf="estatus2.value == 'Seleccionar' && estatus2.touched" 
+                                        class="text-danger ms-2">Seleccione el estado de la tarea</div>
+                                    </div>
+                                </div>
+                                <div class="row my-2">
+                                    <div class="col-6">
+                                        <small class="form-label">Asignar responsable*</small>
+                                        <select [ngClass]="{'border-bottom border-danger': formValid === false && responsable.errors}" 
+                                        formControlName="responsable" class="form-select custom-select">
+                                            <option *ngFor="let employee of employees" [value]="employee.id">
+                                                {{ employee.name }}
+                                            </option>
+                                        </select>
+                                        <ng-container *ngFor="let validation of validation_messages2.responsable">
+                                            <div *ngIf="responsable.hasError(validation.type) && 
+                                            responsable.dirty" class="text-danger">{{validation.message}}</div>
+                                        </ng-container>
+                                        <h5 class="text-danger mt-1" *ngIf="!employees">
+                                            No hay ningun empleado agregado
+                                        </h5>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="form-label">Fecha de vencimiento*</small>
+                                        <input [ngClass]="{'border-bottom border-danger': formValid === false && dueDate.errors}" 
+                                        formControlName="dueDate" class="form-control" type="date">
+                                        <ng-container *ngFor="let validation of validation_messages2.dueDate">
+                                            <div *ngIf="dueDate.hasError(validation.type) && dueDate.dirty"
+                                            class="text-danger">{{validation.message}}</div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                                <div class="row my-2">
+                                    <div class="col-6">
+                                        <small class="form-label">Comentarios adicionales</small>
+                                        <textarea formControlName="commentary" class="form-control" cols="30" 
+                                        rows="3" maxlength="300"></textarea>
+                                    </div>
+                                </div>
+                                <div class="mt-3 float-right">
+                                    <button type="button" class="btn btn-outline-danger me-2" 
+                                    (click)="reset(); modal.dismiss('Button click')">Cancelar</button>
+                                    <ng-container *ngIf="edit === false">
+                                        <button *ngIf="send === false; else noSend" class="btn btn-outline-primary" 
+                                        (click)="newTask(taskForm.value)">Agregar tarea</button>
+                                    </ng-container>
+                                    <ng-container *ngIf="edit === true">
+                                        <button class="btn btn-outline-success" (click)="editTask(taskForm.value)"
+                                        >Guardar cambios</button>
+                                    </ng-container>
+                                </div>
+                            </form>
+                        </div>
+                    </ng-template>
+
+                    <!-- Modal participants -->
+                    <ng-template #participants let-modal>
+                        <div class="modal-header bg-success">
+                          <h5 class="modal-title text-white">Agregue los participantes</h5>
+                          <button class="btn-close" type="button" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form [formGroup]="secondForm" (ngSubmit)="editParticipant(secondForm.value)"
+                            class="form-proyect mt-1" autocomplete="off">
+                                <div *ngIf="formValid === false && secondForm.valid === false" class="alert alert-danger" role="alert">
+                                    Campos sin llenar o datos invalidos
+                                </div>
+                                <div formArrayName="participants">
+                                    <div *ngFor="let participant of participantes.controls; let i = index" class="px-3">
+                                        <div class="mb-2">
+                                            <small class="form-label">Participante {{i+1}}</small>
+                                            <select [formControlName]="i" 
+                                            [ngClass]="{'border-bottom border-danger': formValid == false &&
+                                            participant.errors}" class="form-select custom-select">
+                                                <option *ngFor="let employee of employees" [value]="employee.id">
+                                                    {{ employee.name }} {{ employee.surnames }}
+                                                </option>
+                                            </select>
+                                            <ng-container *ngIf="participant.touched && 
+                                            participant.errors">
+                                                <div class="text-danger">Se requiere del participante</div>
+                                            </ng-container>
+                                            <div class="mt-2 me-2">
+                                                <button [ngClass]="i == 0 ? 'd-none' :  'd-block' " 
+                                                class="btn btn-outline-danger btn-sm float-end" (click)="remove(i)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                       </div>
+                                    </div>
+                                    <button class="btn btn-outline-success btn-sm ms-3" 
+                                    (click)="addRequeriment()" type="button">Agregar participante</button>
+                                </div>
+                                <div class="mt-4 float-right">
+                                    <button class="btn btn-outline-secondary me-2" 
+                                    (click)="modal.dismiss('Button click');" type="button">Cancelar</button>
+                                    <button *ngIf="send === false; else noSend" class="btn btn-outline-primary" 
+                                    type="submit">Agregar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </ng-template>
+
+                    <!-- Modal requeriment -->
+                    <!-- <ng-template #requerimentsModal let-modal>
+                        <div class="modal-header text-info">
+                          <h5 class="modal-title">Agregue los requerimientos</h5>
+                          <button class="btn-close" type="button" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form [formGroup]="secondForm">
+                                <div formArrayName="requeriments">
+                                    <div *ngFor="let requeriment of requeriments.controls; let i = index" class="px-3">
+                                        <div class="mb-2">
+                                            <div [formGroupName]="i">
+                                                <small class="form-label">Requisito {{i+1}}</small>
+                                                <textarea formControlName="requeriment" class="form-control" cols="30" rows="2"></textarea>
+                                                <ng-container *ngFor="let validation of validation_messages3.requeriments">
+                                                    <div *ngIf="secondForm.get('requeriments').hasError(validation.type) && 
+                                                    secondForm.get('requeriments').dirty" class="text-danger">
+                                                    {{validation.message}}</div>
+                                                </ng-container>
+                                            </div>
+                                            <div class="mt-2">
+                                                <button [ngClass]="i == 0 ? 'd-none' :  'd-block' " 
+                                                class="btn btn-outline-danger" (click)="remove(i)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-outline-success btn-sm float-end me-2" 
+                                    (click)="addRequeriment()">Agregar requisito</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="mt-2 float-right">
+                                <button type="button" class="btn btn-outline-danger me-2" 
+                                (click)="reset(); modal.dismiss('Button click')">Cancelar</button>
+                                <ng-container *ngIf="edit === false">
+                                    <button *ngIf="send === false; else noSend" class="btn btn-outline-primary" 
+                                    (click)="newTask(taskForm.value, secondForm.value)">Agregar tarea</button>
+                                </ng-container>
+                                <ng-container *ngIf="edit === true">
+                                    <button class="btn btn-outline-success" (click)="editTask(taskForm.value, secondForm.value)"
+                                    >Guardar cambios</button>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </ng-template> -->
+    
+                    <!-- Modal deleteTask -->
+                    <ng-template #deleteTaskModal let-modal>
+                        <div class="modal-header bg-danger text-white">
+                          <h5 class="modal-title">¿Esta seguro de borrar la tarea?</h5>
+                          <button class="btn-close" type="button" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>La tarea sera eliminada definitivamente y no podra ser restaurada</p>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="mt-3 float-right">
+                                <button class="btn btn-outline-secondary me-2" (click)="reset(); modal.dismiss('Button click')"
+                                type="button">Cancelar</button>
+                                <button class="btn btn-outline-danger" (click)="deleteTask(); modal.close('Save click')" 
+                                type="submit">Borrar</button>
+                            </div>
+                        </div>
+                    </ng-template>
+                    
+    
+                </div>
+            </ng-container>
+
+            <div class="col p-0">
+                <app-footer></app-footer>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<ng-template #noAdmin>
+    <div class="vh-100 p-5">
+        <h1>Error 404</h1>
+        <h2>pagina no encontrada</h2>
+    </div>
+</ng-template>
+
+<ng-template #noSend>
+    <button class="btn btn-outline-secondary" type="button" disabled>
+        <span class="spinner-border spinner-border-sm" role="status" 
+        aria-hidden="true"></span>
+        Guardando...
+    </button>
+</ng-template>

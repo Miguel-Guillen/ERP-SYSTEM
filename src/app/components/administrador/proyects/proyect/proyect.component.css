@@ -1,0 +1,53 @@
+p, h1, h2, h3, h4, h5, span, div, button {
+    font-family: 'Times New Roman', Times, serif;
+}
+p, span, div, td, th, button ,.btn {
+    font-size: 17px;
+}
+
+.form-proyect .form-control {
+    border: #f0ecec solid 1px;
+    border-bottom: rgb(68, 81, 155) solid 2px;
+    background-color: #f8f8f8e8;
+}
+.form-proyect .form-select {
+    border: none;
+    border-bottom: rgb(68, 81, 155) solid 2px;
+    background-color: #f8f8f8e8;
+}
+
+.proyect-table {
+    min-height: 60vh;
+    height: max-content;
+}
+.card {
+    width: 250px;
+    height: 238px;
+}
+.show-desactivated {
+    border-bottom: #8a2be2 solid;
+    border-radius: 0;
+}
+.w-35 {
+    width: 35%;
+}
+
+.card:hover {
+    background-color: rgb(237, 240, 243) !important;
+}
+
+@media (width < 769px){
+    p, span, div, button, td, th {
+        font-size: 14.5px;
+    }
+    .card {
+        width: 190px;
+        height: 200px;
+    }
+    .button-search {
+        display: none;
+    }
+    .w-35 {
+        width: 75%;
+    }
+}

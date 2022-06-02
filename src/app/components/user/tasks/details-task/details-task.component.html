@@ -1,0 +1,100 @@
+<div class="container-fluid bg-light overflow-hidden">
+    <div class="row">
+
+        <div class="col-2 px-0">
+            <app-sidebar></app-sidebar>
+        </div>
+
+        <div class="col-10 px-0">
+            <div class="row d-flex justify-content-evenly align-items-center project-form my-3">
+
+                <ng-container *ngIf="user.rol === 0; else noAdmin">
+                    <div class="col-10 col-lg-5 bg-white border border-3 shadow-sm py-3 px-4">
+                        <div class="row">
+                            <div class="col-12 d-flex border-bottom border-2 pb-2">
+                                <h5 class="fw-bold flex-grow-1 my-auto">{{proyect.name}}</h5>
+                            </div>
+                            <div class="col-6 p-3">
+                                <p class="my-1">Descripcion: {{proyect.description}}</p>
+                            </div>
+                            <div class="col-6 p-3">
+                                <p class="my-1" [ngClass]="{'text-warning': proyect.estatus == 'Pausado',
+                                'text-success': proyect.estatus == 'Cerrado', 
+                                'text-info': proyect.estatus == 'En progreso' }">
+                                    Estado: {{proyect.estatus}}
+                                </p>
+                                <p *ngIf="proyect.blnActivo === 'Baja' " class="text-danger my-1">
+                                    Proyecto dado de baja</p>
+                                <p class="my-1">Fecha de inicio: {{proyect.dateStart | date: format }}</p>
+                                <p class="my-1">Fecha de cierre: {{proyect.dateEnd | date: format }}</p>
+                            </div>
+                            <div class="col mt-4">
+                                <button class="btn btn-outline-success" [routerLink]="['/myProject']">
+                                    <span class="me-1"><i class="far fa-arrow-alt-circle-left"></i></span>Volver
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="col-10 col-lg-5 bg-white border border-3 shadow-sm p-3 m-lg-0 my-3">
+                        <div class="row">
+                            <h5 class="fw-bold pb-2 ps-4 mb-3 border-bottom border-bottom-3"
+                            >Tareas asignadas</h5>
+                            <ngb-accordion [closeOthers]="true" activeIds="static-1">
+                                <ngb-panel *ngFor="let task of listTasks" [title]="task.title">
+                                  <ng-template ngbPanelContent>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="searchTask" (click)="searchTask(task.id)">
+                                                    <p class="fw-bold">
+                                                        Titulo: {{task.title}}
+                                                        <button class="btn ms-2">
+                                                            <i class="fas fa-link"></i>
+                                                        </button>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <p>Descripcion: {{task.description}}</p>
+                                                <p>Requerimientos: {{task.requeriments}}</p>
+                                            </div>
+                                            <div class="col-6">
+                                                <p [ngClass]="{'text-success': task.priority == 'Bajo',
+                                                'text-warning': task.priority == 'Medio', 
+                                                'text-danger': task.priority == 'Alto'}">Prioridad: {{task.priority}}</p>
+                                                <p>Estado: {{task.estatus}}</p>
+                                                <p>Responsable: {{task.responsable}}</p>
+                                                <p>Fecha de vencimiento: {{task.dueDate | date: format}}</p>
+                                            </div>
+                                        </div>
+                                  </ng-template>
+                                </ngb-panel>
+                            </ngb-accordion>
+                        </div>
+                    </div>
+                </ng-container>
+
+            </div>
+
+            <div class="col px-0">
+                <app-footer></app-footer>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<ng-template #noAdmin>
+    <div class="vh-100 p-5">
+        <h1>Error 404</h1>
+        <h2>pagina no encontrada</h2>
+    </div>
+</ng-template>
+
+<!-- <ng-template #noProjects>
+    <div class="project-table mx-4">
+        <h5 class="pt-4">No ha sido añadido a ningun proyecto aun</h5>
+        <p>Solicite a su lider de proyecto que lo añada al proyecto</p>
+    </div>
+</ng-template> -->

@@ -1,0 +1,18 @@
+p, span, a, div {
+    font-size: 17px;
+}
+.sidebar {
+    position: fixed;
+}
+.nav-link:hover {
+    color: rgb(136, 135, 135) !important
+}
+
+@media (width < 880px){
+    p, span, a, div {
+        font-size: 15.5px;
+    }
+    .fs-5 {
+        font-size: 16.5px !important;
+    }
+}

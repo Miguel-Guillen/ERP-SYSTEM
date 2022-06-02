@@ -1,0 +1,68 @@
+p, span, div, h1, h2, h3, h4, h5 td, th {
+    font-family: 'Times New Roman', Times, serif;
+}
+p, span, div, td, th {
+    font-size: 17px;
+}
+
+.task-table {
+    min-height: 65vh;
+    height: max-content;
+}
+.task-table tbody tr:hover {
+    background-color: rgb(237, 240, 243) !important;
+    cursor: pointer;
+}
+
+.filters {
+    display: flex;
+}
+.filters select {
+    width: 150px;
+    margin: 0 10px;
+}
+.search-bar2 {
+    display: none;
+}
+.w-35 {
+    width: 45%;
+}
+
+@media (width < 769px){
+    p, span, div, td, th {
+        font-size: 16px;
+    }
+    .filters select {
+        width: 110px;
+        margin: 0 6px;
+    }
+    .filters .search-bar {
+        display: none;
+    }
+    .button-search {
+        display: none;
+    }
+    .w-35 {
+        width: 90%;
+    }
+}
+
+@media (width < 426px){
+    p, span, div, td, th {
+        font-size: 14px;
+    }
+    .filters {
+        display: flex;
+        justify-content: space-between;
+    }
+    .filters select {
+        width: 110px;
+        margin: 0 6px;
+    }
+    .filters .search-bar {
+        display: none !important;
+    }
+    .search-bar2 {
+        display: block;
+    }
+}

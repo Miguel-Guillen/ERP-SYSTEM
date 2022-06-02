@@ -1,0 +1,138 @@
+<div class="container-fluid bg-light min-vh-100 overflow-hidden">
+    <div class="row">
+
+        <div class="col-2 p-0">
+            <app-sidebar></app-sidebar>
+        </div>
+
+        <div class="col-10 px-0">
+            <ng-container *ngIf="user.rol === 1; else noAdmin">
+                <div class="container">
+                    <div class="row d-flex justify-content-around pt-4">
+    
+                        <div class="col-12 d-flex mt-4 mb-md-5 mb-2 px-md-5">
+                            <div class="col d-flex justify-content-end">
+                                <button class="btn me-md-4">
+                                    <i class="far fa-envelope"></i>
+                                </button>
+                                <button class="btn">
+                                    <i class="far fa-bell"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="routes col-md-3 bg-white shadow-sm border border-3 rounded mb-3 p-0"
+                        (click)="navigate('employee')">
+                            <div class="bg-info p-3 text-center">
+                                <img src="../../../../assets/img/user.png" class="img-fluid" alt="">
+                            </div>
+                            <div class="p-3">
+                                <h5 class="fw-bold mb-2">Empleados</h5>
+                                <p>Agregue, modifique y elimine sus usuarios, administre sus empleados,
+                                    otorgue privilegios y mantenga siempre al dia sus empleados.
+                                </p>
+                            </div>
+                        </div>
+    
+                        <div class="routes col-md-3 bg-white shadow-sm border border-3 rounded mb-3 p-0"
+                        (click)="navigate('project')">
+                            <div class="bg-info p-3 text-center">
+                                <img src="../../../../assets/img/libro.png" class="img-fluid" alt="">
+                            </div>
+                            <div class="p-3">
+                                <h5 class="fw-bold mb-2">Proyectos</h5>
+                                <p>Administre, gestione, combruebe el indice de tareas completadas
+                                    el ultimo mes y realice un seguimiento de productividad de sus empleados.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="routes col-md-3 bg-white shadow-sm border border-3 rounded p-0"
+                        (click)="navigate('task')">
+                            <div class="bg-info p-3 text-center">
+                                <img src="../../../../assets/img/tarea.png" class="img-fluid" alt="">
+                            </div>
+                            <div class="p-3">
+                                <h5 class="fw-bold mb-2">Tareas</h5>
+                                <p>Administre, gestione y comprube el flujo de trabajo del proyecto,
+                                    mire las tareas de sus proyectos
+                                </p>
+                            </div>
+                        </div>
+    
+                    </div>
+                </div>
+            </ng-container>
+
+            <div class="col px-0 pt-5">
+                <app-footer></app-footer>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<ng-template #noAdmin>
+    <div class="row d-flex justify-content-around m-lg-5 mx-2 mt-5 mb-3">
+
+        <div class="col-4">
+
+            <div class="routes bg-white shadow-sm border border-3 rounded p-0"
+            (click)="navigate('myProject')">
+                <div class="bg-info p-2 text-center">
+                    <img src="../../../../assets/img/libro.png" class="img-fluid w-35" alt="">
+                </div>
+                <div class="p-3">
+                    <h5 class="fw-bold mb-2">Proyectos</h5>
+                    <p class="mb-1">Mostrar los proyectos que pertenezco</p>
+                </div>
+            </div>
+                        
+            <div class="routes bg-white shadow-sm border border-3 rounded mt-3 p-0"
+            (click)="navigate('myTask')">
+                <div class="bg-info p-2 text-center">
+                    <img src="../../../../assets/img/tarea.png" class="img-fluid w-50" alt="">
+                </div>
+                <div class="p-3">
+                    <h5 class="fw-bold mb-2">Tareas</h5>
+                    <p class="mb-1">Mostrar todas las tareas asignadas</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-7 p-0">
+            <div class="pending-task bg-white border border-3 shadow-sm rounded">
+                <h4 class="bg-info text-white p-3 mb-0">Tareas pendientes</h4>
+                <ng-container *ngIf="tasks.length > 0; else noTask">
+                    <div *ngFor="let task of tasks" class="myTasks" (click)="searchTask(task.id)">
+                        <div class="row border-bottom border-bottom-4 p-2 px-lg-3 m-0">
+
+                            <div class="col-9 p-0">
+                                <p class="fw-bold my-1">{{ task.title }}</p>
+                                <p class="my-1">{{ task.description }}</p>
+                            </div>
+
+                            <div class="col-3 ps-2">
+                                <p [ngClass]="{'text-warning' : task.priority == 'Medio',
+                                'text-success' : task.priority == 'Bajo',
+                                'text-danger' : task.priority == 'Alto'}"
+                                class="my-1">{{ task.priority }}</p>
+                                <p class="my-1">{{ task.dueDate | date: format }}</p>
+                            </div>
+
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+
+    </div>
+</ng-template>
+
+<ng-template #noTask>
+    <div class="text-center p-3">
+        <h4 class="fw-bold text-success">Enhorabuena estas al dia con tus tareas!</h4>
+        <img class="img-fluid w-25" src="../../../assets/img/tasks-completed.png" alt="">
+    </div>
+</ng-template>

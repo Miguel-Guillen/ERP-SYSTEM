@@ -1,0 +1,292 @@
+<div class="container-fluid bg-light overflow-hidden">
+    <div class="row">
+
+        <div class="col-2 px-0">
+            <app-sidebar></app-sidebar>
+        </div>
+
+        <div class="col-10 mx-auto p-0">
+            <ng-container>
+                <div class="row d-flex m-md-5 my-4 mx-3">
+
+                    <div class="col-12 buttons mb-4 px-0">
+                        <button [ngClass]="show === false ? 'show-desactivated' : 'border-none' " 
+                        (click)="show = false" class="btn me-md-2">Mostrar todos</button>
+                        <button [ngClass]="show === true ? 'show-desactivated' : 'border-none' " 
+                        (click)="show = true" class="btn">Eliminados</button>
+                    </div>
+    
+                    <div class="col-12 mt-2 mb-4 d-flex px-0">
+                        <button class="btn btn-outline-primary p-1 px-md-2" (click)="openModal(addModal)">
+                            Nuevo empleado</button>
+                        <div class="col d-flex justify-content-end p-0">
+                            <select [(ngModel)]="filter" (ngModelChange)="filters($event)"
+                            class="form-select custom-select w-45 me-2">
+                                <option *ngFor="let area of typeArea" [value]="area">
+                                    {{ area }}
+                                </option>
+                            </select>
+                            <input [(ngModel)]="search" class="form-control rounded w-35 px-2" 
+                            placeholder="Buscar" type="search">
+                            <button class="btn bg-white border border-2 button-search">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+    
+                    <!-- Table -->
+                    <ng-container *ngIf="show === false; else showDesactivated">
+                        <div class="employee-table overflow-auto mt-md-4 p-0">
+                            <div *ngIf="listEmployees.length > 0">
+                                <table class="table table-borderless bg-white border border-4 shadow-sm">
+                                    <thead>
+                                        <tr class="table-info">
+                                            <th class="col-3 text-center">Nombre</th>
+                                            <th class="col-2 text-center">Puesto</th>
+                                            <th class="col-2 text-center">Area</th>
+                                            <th class="col-2 text-center">Correo</th>
+                                            <th class="col-1 text-center">Permisos</th>
+                                            <th class="col-2 text-center">Detalles</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let employee of listEmployees | employee: search">
+                                            <td class="col-3 text-center">{{employee.name}} {{employee.surnames}}</td>
+                                            <td class="col-2 text-center">{{employee.job}}</td>
+                                            <td class="col-2 text-center">{{employee.area}}</td>
+                                            <td class="col-2 text-center">{{employee.email}}</td>
+                                            <td class="col-1 text-center">{{ (employee.rol) == '0' ? 'Usuario' : 'Administrador' }}</td>
+                                            <td class="col-2 d-flex">
+                                                <button class="btn btn-outline-success me-1" (click)="getOneEmployee(employee.id); openModal(addModal)">
+                                                    <i class="far fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger" (click)="openModal(deleteModal); idEmployee = employee.id">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div *ngIf="listEmployees.length == 0" class="mx-4">
+                                <h5 class="pt-1">No hay ningun empleado en la base de datos</h5>
+                                <p class="py-1">presione el boton <span class="fw-bold">Nuevo empleado</span> para añadir un empleado</p>
+                            </div>
+                        </div>
+                    </ng-container>
+            
+                    <!-- Modal add -->
+                    <ng-template #addModal let-modal>
+                        <div *ngIf="isEdit === false" class="modal-header">
+                            <h5 class="modal-title text-info">Agregar el empleado</h5>
+                            <button class="btn-close" (click)="modal.dismiss('Cross click')" type="button"
+                            aria-label="Close"></button>
+                        </div>
+                        <ng-container *ngIf="isEdit === true">
+                            <div class="modal-header bg-info text-white">
+                                <h5 class="modal-title">Modificar el empleado</h5>
+                                <button class="btn-close" (click)="modal.dismiss('Cross click')" type="button" 
+                                aria-label="Close"></button>
+                            </div>
+                        </ng-container>
+                        <div class="modal-body">
+                            <form [formGroup]="employeeForm" class="form-employee mt-md-1" autocomplete="off">
+                                <div *ngIf="formValid === false && employeeForm.valid === false" class="alert alert-danger" role="alert">
+                                    Campos sin llenar o datos invalidos
+                                </div>
+                                <div class="row my-md-2">
+                                    <div class="col-md-6">
+                                        <small class="form-label">Nombre*</small>
+                                        <input [ngClass]="{'border-bottom border-danger' : formValid === false && name.errors}" 
+                                        formControlName="name" class="form-control" type="text" placeholder="Inserte el nombre">
+                                        <ng-container *ngFor="let validation of validation_messages.name">
+                                            <div *ngIf="name.hasError(validation.type) && name.dirty"
+                                            class="text-danger">{{validation.message}}</div>
+                                        </ng-container>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="form-label">Apellidos*</small>
+                                        <input [ngClass]="{'border-bottom border-danger': formValid === false && surnames.errors}" 
+                                        formControlName="surnames" class="form-control" type="text" placeholder="Inserte los apellidos" >
+                                        <ng-container *ngFor="let validation of validation_messages.surnames">
+                                            <div *ngIf="surnames.hasError(validation.type) && surnames.dirty"
+                                            class="text-danger" >{{validation.message}}</div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                                <div class="row my-md-2">
+                                    <div class="col-md-6">
+                                        <small class="form-label">Puesto*</small>
+                                        <input [ngClass]="{'border-bottom border-danger': formValid === false && job.errors}"
+                                        formControlName="job" class="form-control" type="text" placeholder="Inserte puesto de trabajo">
+                                        <ng-container *ngFor="let validation of validation_messages.job">
+                                            <div *ngIf="job.hasError(validation.type) && job.dirty"
+                                            class="text-danger">{{validation.message}}</div>
+                                        </ng-container>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="form-label">Area de trabajo*</small>
+                                        <select [ngClass]="{'border-bottom border-danger': formValid === false && 
+                                        (area.errors || area.value == 'Seleccionar')}" 
+                                        formControlName="area" class="form-select">
+                                            <option *ngFor="let area of typeArea" [value]="area">
+                                                {{ area }}
+                                            </option>
+                                        </select>
+                                        <ng-container *ngFor="let validation of validation_messages.area">
+                                            <div *ngIf="area.hasError(validation.type) && area.dirty" 
+                                            class="text-danger">{{validation.message}}</div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                                <div class="row my-md-2">
+                                    <div class="col-md-6">
+                                        <small class="form-label">Correo*</small>
+                                        <input [ngClass]="{'border-bottom border-danger': formValid === false && email.errors}"
+                                        formControlName="email" class="form-control" type="email" 
+                                        placeholder="Inserte un correo">
+                                        <ng-container *ngFor="let validation of validation_messages.email">
+                                            <div *ngIf="email.hasError(validation.type) && email.dirty"
+                                            class="text-danger">{{validation.message}}</div>
+                                        </ng-container>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="form-label">Contraseña*</small>
+                                        <input [ngClass]="{'border-bottom border-danger': formValid === false && password.errors}"
+                                        formControlName="password" class="form-control" type="password"
+                                        placeholder="Inserte una contraseña">
+                                        <ng-container *ngFor="let validation of validation_messages.password">
+                                            <div *ngIf="password.hasError(validation.type) && password.dirty"
+                                            class="text-danger">{{validation.message}}</div>
+                                        </ng-container>
+                                        <div *ngIf="password.hasError('minlength')" class="text-danger">
+                                            La contraseña debe contener minimo 8 caracteres
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="roy my-md-2 px-0">
+                                    <div class="col px-0">
+                                        <small class="form-label">Privilegios*</small>
+                                        <select [ngClass]="{'border-bottom border-danger': formValid === false && rol.errors}" 
+                                        formControlName="rol" class="form-select custom-select">
+                                            <option value=2>Seleccionar</option>
+                                            <option value=0>Usuario</option>
+                                            <option value=1>Administrador</option>
+                                        </select>
+                                        <ng-container *ngFor="let validation of validation_messages.rol">
+                                            <div *ngIf="rol.hasError(validation.type) && rol.dirty"
+                                            class="text-danger">{{validation.message}}</div>
+                                        </ng-container>
+                                        <div *ngIf="rol.value == 'Seleccionar'" class="text-danger ms-2">
+                                            Seleccione los permisos
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-3 float-right">
+                                    <button class="btn btn-outline-secondary me-2" (click)="reset(); modal.dismiss('Button click')"
+                                    type="button">Cancelar</button>
+                                    <ng-container *ngIf="isEdit === false">
+                                        <button *ngIf="send === false; else noSend" class="btn btn-outline-primary" 
+                                        (click)="newEmployee(employeeForm.value)" type="button">Agregar</button>
+                                    </ng-container>
+                                    <ng-container *ngIf="isEdit === true">
+                                        <button *ngIf="send === false; else noSend" class="btn btn-outline-success" 
+                                        (click)="updateEmployee(employeeForm.value)" type="button">Guardar cambios</button>
+                                    </ng-container>
+                                </div>
+                            </form>
+                        </div>
+                    </ng-template>
+    
+                    <!-- Modal delete -->
+                    <ng-template #deleteModal let-modal>
+                        <div class="modal-header bg-danger text-white">
+                          <h4 class="modal-title">¿Esta seguro de borrar el empleado?</h4>
+                          <button class="btn-close" type="button" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>El empleado quedara dado de baja y sera eliminado al pasar 30 dias</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-outline-secondary" (click)="modal.dismiss('Button click')">Cancelar</button>
+                            <button class="btn btn-outline-danger" (click)="deleteEmployee('Baja'); modal.close('Save click')"
+                            type="button">Borrar</button>
+                        </div>
+                    </ng-template>
+            
+                </div>
+            </ng-container>
+
+            <div class="col-12 p-0">
+                <app-footer></app-footer>
+            </div>
+            
+        </div>
+    </div>
+
+</div>
+
+<ng-template #showDesactivated>
+    <div class="employee-table overflow-auto mt-md-4 p-0">
+        <div *ngIf="employeeDesactivated.length > 0">
+            <table class="table table-borderless bg-white border border-4 shadow-sm">
+                <thead>
+                    <tr class="table-info">
+                        <th class="col-3 text-center">Nombre</th>
+                        <th class="col-2 text-center">Puesto</th>
+                        <th class="col-2 text-center">Area</th>
+                        <th class="col-1 text-center">Permisos</th>
+                        <th class="col-2 text-center">Reactivar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let remployee of employeeDesactivated | employee: search">
+                        <td class="col-3 text-center">{{remployee.name}} {{remployee.surnames}}</td>
+                        <td class="col-2 text-center">{{remployee.job}}</td>
+                        <td class="col-2 text-center">{{remployee.area}}</td>
+                        <td class="col-1 text-center">{{ (remployee.rol) == '0' ? 'Usuario' : 'Administrador' }}</td>
+                        <td class="col-2 text-center">
+                            <button class="btn btn-outline-warning" (click)="openModal(reactiveModal); idEmployee = remployee.id">
+                                <i class="fas fa-undo"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div *ngIf="employeeDesactivated.length == 0" class="mx-4">
+            <h5 class="pt-1">No hay ningun empleado dado de baja</h5>
+        </div>
+    </div>
+
+    <!-- Modal delete -->
+    <ng-template #reactiveModal let-modal>
+        <div class="modal-header bg-success text-white">
+          <h4 class="modal-title">¿Desea reactivar el empleado?</h4>
+          <button class="btn-close" type="button" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+        <div class="modal-body">
+            <p>El empleado sera reactivado y podra ser usado</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline-secondary" (click)="modal.dismiss('Button click')">Cancelar</button>
+            <button class="btn btn-outline-success" (click)="deleteEmployee('Activo'); modal.close('Save click')"
+            type="button">Reactivar</button>
+        </div>
+    </ng-template>
+
+</ng-template>
+
+<ng-template #noAdmin>
+    <div class="vh-100 p-5">
+        <h1>Error 404</h1>
+        <h2>pagina no encontrada</h2>
+    </div>
+</ng-template>
+
+<ng-template #noSend>
+    <button class="btn btn-outline-secondary" type="button" disabled>
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Guardando...
+    </button>
+</ng-template>

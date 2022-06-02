@@ -1,0 +1,30 @@
+p, span, div, h1, h2, h3, h4, h5 {
+    font-family: 'Times New Roman', Times, serif;
+}
+p, span, div, h6 {
+    font-size: 17px;
+}
+
+.task {
+    min-height: 50vh;
+    height: max-content;
+}
+.form-task .form-control {
+    border: #f0ecec solid 1px;
+    border-bottom: rgb(68, 81, 155) solid 2px;
+    background-color: #f8f8f8e8;
+}
+.form-task .form-select {
+    border: none;
+    border-bottom: rgb(68, 81, 155) solid 2px;
+    background-color: #f8f8f8e8;
+}
+
+@media (width < 769px){
+    p, span, div, h6, button {
+        font-size: 14px;
+    }
+    h5 {
+        font-size: 17px;
+    }
+}

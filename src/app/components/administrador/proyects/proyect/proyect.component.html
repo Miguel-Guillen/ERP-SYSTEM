@@ -1,0 +1,256 @@
+<div class="container-fluid bg-light overflow-hidden">
+    <div class="row">
+
+        <div class="col-2 px-0">
+            <app-sidebar></app-sidebar>
+        </div>
+
+        <div class="col-10 px-0">
+            <ng-container *ngIf="user.rol == 1; else noAdmin">
+                <div class="row d-flex justify-content-between m-lg-5 m-4">
+
+                    <div class="col-12 mb-4 px-0">
+                        <button [ngClass]="show === 0 ? 'show-desactivated' : 'border-none' " 
+                        class="btn me-2" (click)="show = 0">Mostrar todos</button>
+                        <button [ngClass]="show === 1 ? 'show-desactivated' : 'border-on' " 
+                        class="btn" (click)="show = 1">Mostrar cerrados</button>
+                        <button [ngClass]="show === 2 ? 'show-desactivated' : 'border-on' " 
+                        class="btn" (click)="show = 2">Mostrar desactivados</button>
+                    </div>
+    
+                    <div class="col-12 mt-2 mb-4 d-flex px-0">
+                        <button class="btn btn-outline-primary" (click)="openModal(addModal)">Nuevo proyecto</button>
+                        <div class="col d-flex justify-content-end">
+                            <input type="search" class="form-control rounded w-35 px-2" placeholder="Buscar"
+                            [(ngModel)]="search">
+                            <button class="btn bg-white border border-2 button-search">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+    
+                    <!-- Proyects -->
+                    <ng-container *ngIf="show === 0">
+                        <div class="proyect-table d-flex mt-3 p-0">
+                            <div *ngFor="let progress of projectsProgress | proyects: search" 
+                            class="card bg-white border border-3 mb-2 mx-1 p-lg-3 p-2" (click)="searchProyect(progress.id)" 
+                            type="button">
+                                <div class="row">
+                                    <div class="col">
+                                        <p class="fw-bold mt-1 mb-2">{{progress.name}}</p>
+                                        <p class="my-1">{{ (progress.description.length > 85)? 
+                                        (progress.description | slice: 0:85) + '...' : (progress.description) }}</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <p [ngClass]="{'text-warning': progress.estatus == 'Pausado', 
+                                        'text-info': progress.estatus == 'En progreso' }" 
+                                        class="my-1">Estatus: {{progress.estatus}}</p>
+                                        <small class="my-1">Entrega: {{ progress.dateEnd | date: format }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="projectsProgress.length == 0" class="px-3">
+                                <h5>No hay ningun proyecto añadido</h5>
+                                <p>presione el boton 
+                                    <span class="fw-bold">nuevo proyecto</span> 
+                                    para añadir un proyecto
+                                </p>
+                            </div>
+                        </div>
+                    </ng-container>
+    
+                    <!-- Proyects Done -->
+                    <ng-container *ngIf="show === 1">
+                        <div class="proyect-table d-flex mt-3 p-0">
+                            <div *ngFor="let done of projectsDone | proyects: search" 
+                            class="card bg-white border border-3 mb-2 mx-1 p-3" (click)="searchProyect(done.id)" 
+                            type="button">
+                                <div class="row">
+                                    <div class="col">
+                                        <p class="fw-bold mt-1 mb-2">{{done.name}}</p>
+                                        <p class="my-1">{{ (done.description.length > 85)? 
+                                        (done.description | slice: 0:85) + '...' : (done.description) }}</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <p [ngClass]="done.estatus == 'Cerrado' ? 'text-success' : 'text-dark' " 
+                                        class="my-1">Estatus: {{done.estatus}}</p>
+                                        <small class="my-1">Entrega: {{ done.dateEnd | date: format }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="projectsDone.length == 0" class="px-3">
+                                <h5>No hay ningun proyecto cerrado</h5>
+                                <p>para cerrar el proyecto vaya a cambiar el estatus de un proyecto</p>
+                            </div>
+                        </div>
+                    </ng-container>
+    
+                    <!-- Proyects Desactivated -->
+                    <ng-container *ngIf="show === 2">
+                        <div class="proyect-table d-flex mt-3 p-0">
+                            <div *ngFor="let desactivated of projectsDesactivated | proyects: search" 
+                            class="card bg-white border border-3 mb-2 mx-1 p-3" (click)="searchProyect(desactivated.id)" 
+                            type="button">
+                                <div class="row">
+                                    <div class="col">
+                                        <p class="fw-bold mt-1 mb-2">{{desactivated.name}}</p>
+                                        <p class="my-1">{{ (desactivated.description.length > 85)? 
+                                        (desactivated.description | slice: 0:85) + '...' : (desactivated.description) }}</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <p class="text-danger my-1">Estatus: {{desactivated.estatus}} - Baja</p>
+                                        <small class="my-1">Entrega: {{ desactivated.dateEnd | date: format }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="projectsDesactivated.length == 0" class="px-3">
+                                <h5>No hay ningun proyecto dado de baja</h5>
+                            </div>
+                        </div>
+                    </ng-container>
+                
+                    <!-- Add Modal -->
+                    <ng-template #addModal let-modal>
+                        <div class="modal-header">
+                          <h5 class="modal-title text-info">Nuevo proyecto</h5>
+                          <button class="btn-close" type="button" aria-label="Close"
+                          (click)="modal.dismiss('Cross click'); reset()"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form [formGroup]="projectForm" 
+                            class="form-proyect mt-1" autocomplete="off">
+                                <div *ngIf="formValid === false && projectForm.valid == false" class="alert alert-danger" role="alert">
+                                    Campos sin llenar o datos invalidos
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">
+                                        <small class="form-label">Nombre*</small>
+                                        <input [ngClass]="{'border-bottom border-danger': formValid === false && name.errors}"
+                                        formControlName="name" class="form-control" type="text" maxlength="70"
+                                        placeholder="Inserte el nombre">
+                                        <ng-container *ngFor="let validation of validation_messages.name">
+                                            <div *ngIf="name.hasError(validation.type) && name.dirty" 
+                                            class="text-danger">{{validation.message}}</div>
+                                        </ng-container>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="form-label">Descripcion*</small>
+                                        <textarea [ngClass]="{'border-bottom border-danger': formValid === false && description.errors}" 
+                                        formControlName="description" class="form-control" type="text" placeholder="Inserte la descripcion" 
+                                        rows="4" cols="30" maxlength="300"></textarea>
+                                        <ng-container *ngFor="let validation of validation_messages.description">
+                                            <div class="text-danger" *ngIf="description.hasError(validation.type) && 
+                                            description.dirty">{{validation.message}}</div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                                <div class="row my-2">
+                                    <div class="col-6">
+                                        <small class="form-label">Fecha Inicio*</small>
+                                        <input [ngClass]="{'border-bottom border-danger': formValid === false && dateStart.errors}" 
+                                        formControlName="dateStart" class="form-control" type="date">
+                                        <ng-container *ngFor="let validation of validation_messages.dateStart">
+                                            <div class="text-danger" *ngIf="dateStart.hasError(validation.type) && 
+                                            dateStart.dirty">{{validation.message}}</div>
+                                        </ng-container>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="form-label">Fecha Terminacion*</small>
+                                        <input [ngClass]="{'border-bottom border-danger': formValid === false && dateEnd.errors}" 
+                                        formControlName="dateEnd" class="form-control" type="date">
+                                        <ng-container *ngFor="let validation of validation_messages.dateEnd">
+                                            <div class="text-danger" *ngIf="dateEnd.hasError(validation.type) && 
+                                            dateEnd.dirty">{{validation.message}}</div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                                <div class="mt-3 float-right">
+                                    <button class="btn btn-outline-secondary me-2" (click)="reset(); modal.dismiss('Button click')"
+                                    type="button">Cancelar</button>
+                                    <button class="btn btn-outline-primary" (click)="checkData(participants)"
+                                    >Siguiente</button>
+                                </div>
+                            </form>
+                        </div>
+                    </ng-template>
+
+                    <!-- Modal participants -->
+                    <ng-template #participants let-modal>
+                        <div class="modal-header">
+                          <h5 class="modal-title text-info">Agregue los participantes</h5>
+                          <button class="btn-close" type="button" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form [formGroup]="secondForm" (ngSubmit)="newProject(projectForm.value, secondForm.value)"
+                            class="form-proyect mt-1" autocomplete="off">
+                                <div *ngIf="formValid === false && secondForm.valid === false" class="alert alert-danger" role="alert">
+                                    Campos sin llenar o datos invalidos
+                                </div>
+                                <div formArrayName="participants">
+                                    <div *ngFor="let participant of participantes.controls; let i = index" class="px-3">
+                                        <div class="mb-2">
+                                            <small class="form-label">Participante {{i+1}}</small>
+                                            <select [formControlName]="i" 
+                                            [ngClass]="{'border-bottom border-danger': formValid == false &&
+                                            participant.errors}" class="form-select custom-select">
+                                                <option *ngFor="let employee of employees" [value]="employee.id">
+                                                    {{ employee.name }} {{ employee.surnames }}
+                                                </option>
+                                            </select>
+                                            <ng-container *ngIf="participant.touched && 
+                                            participant.errors">
+                                                <div class="text-danger">Se requiere del participante</div>
+                                            </ng-container>
+                                            <div class="mt-2 me-2">
+                                                <button [ngClass]="i == 0 ? 'd-none' :  'd-block' " 
+                                                class="btn btn-outline-danger btn-sm float-end" (click)="remove(i)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                       </div>
+                                    </div>
+                                    <button class="btn btn-outline-success btn-sm ms-3" 
+                                    (click)="addRequeriment()" type="button">Agregar participante</button>
+                                </div>
+                                <div class="mt-4 float-right">
+                                    <button class="btn btn-outline-secondary me-2" 
+                                    (click)="modal.dismiss('Button click'); secondForm.reset()"
+                                    type="button">Cancelar</button>
+                                    <button *ngIf="send === false; else noSend" class="btn btn-outline-primary" 
+                                    type="submit">Agregar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </ng-template>
+            
+                </div>
+            </ng-container>
+
+            <div class="col p-0">
+                <app-footer></app-footer>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<ng-template #noAdmin>
+    <div class="vh-100 p-5">
+        <h1>Error 404</h1>
+        <h2>pagina no encontrada</h2>
+    </div>
+</ng-template>
+
+<ng-template #noSend>
+    <button class="btn btn-outline-secondary" type="button" disabled>
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Guardando...
+    </button>
+</ng-template>

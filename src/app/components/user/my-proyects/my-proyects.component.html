@@ -1,0 +1,72 @@
+<div class="container-fluid bg-light">
+    <div class="row">
+
+        <div class="col-2 px-0">
+            <app-sidebar></app-sidebar>
+        </div>
+
+        <div class="col-10 px-0">
+            <div class="row m-lg-5 m-4">
+                <ng-container *ngIf="user.rol === 0; else noAdmin">
+    
+                    <div class="col-12 mt-2 mb-4 d-flex px-0">
+                        <h4 class="fw-bold ms-2">Proyectos asignados</h4>
+                        <div class="col d-flex justify-content-end">
+                            <input type="search" class="form-control rounded w-35 px-2" placeholder="Buscar"
+                            [(ngModel)]="search">
+                            <button class="btn bg-white border border-2 button-search">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+    
+                    <ng-container *ngIf="listProjects.length > 0; else noProjects">
+                        <div class="project-table d-flex mt-4 p-0">
+                            <div *ngFor="let project of listProjects | proyects: search" 
+                            class="card bg-white border border-3 mb-2 mx-1 p-lg-3 p-2" 
+                            (click)="searchTask(project.id)" type="button">
+                                <div class="row">
+                                    <div class="col">
+                                        <p class="fw-bold mt-1 mb-2">{{project.name}}</p>
+                                        <p class="my-1">{{ (project.description.length > 100)? 
+                                        (project.description | slice: 0:100) + '...' : (project.description) }}</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <p [ngClass]="{'text-warning': project.estatus == 'Pausado', 
+                                        'text-info': project.estatus == 'En progreso',
+                                        'text-success': project.estatus == 'Cerrado'}" 
+                                        class="my-1">Estatus: {{project.estatus}}</p>
+                                        <small class="my-1">Entrega: {{ project.dateEnd | date: format }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                </ng-container>
+            </div>
+
+            <div class="col px-0">
+                <app-footer></app-footer>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<ng-template #noAdmin>
+    <div class="vh-100 p-5">
+        <h1>Error 404</h1>
+        <h2>pagina no encontrada</h2>
+    </div>
+</ng-template>
+
+<ng-template #noProjects>
+    <div class="project-table mx-4">
+        <h5 class="pt-4">No ha sido añadido a ningun proyecto aun</h5>
+        <p>Solicite a su lider de proyecto que lo añada al proyecto</p>
+    </div>
+</ng-template>

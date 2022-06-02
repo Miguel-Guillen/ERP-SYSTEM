@@ -1,0 +1,19 @@
+p, span, div, h1, h2, h3, h4, h5 {
+    font-family: 'Times New Roman', Times, serif;
+}
+p, span, div {
+    font-size: 16px;
+}
+.reports {
+    min-height: 80vh;
+    height: max-content;
+}
+.options {
+    cursor: pointer;
+}
+.options:hover {
+    background-color: rgb(237, 240, 243) !important;
+}
+.w-40 {
+    width: 40%;
+}

@@ -1,0 +1,56 @@
+p, span, div, h1, h2, h3, h4, h5 {
+    font-family: 'Times New Roman', Times, serif;
+}
+h4 {
+    font-size: 17px;
+}
+p, span, div {
+    font-size: 14px;
+}
+i {
+    font-size: 28px;
+}
+img {
+    width: 50%;
+}
+
+.routes {
+    width: 100%;
+}
+.routes:hover {
+    background-color: rgb(237, 240, 243) !important;
+    cursor: pointer;
+}
+.tasks {
+    min-height: 65vh;
+}
+
+.pending-task {
+    min-height: 70vh;
+    height: max-content;
+}
+.myTasks:hover {
+    background-color: rgb(237, 240, 243) !important;
+    cursor: pointer;
+}
+.w-35 {
+    width: 35%;
+}
+
+@media (width > 768px){
+    p, span, div {
+        font-size: 16px;
+    }
+    h5 {
+        font-size: 17px;
+    }
+    h4 {
+        font-size: 20px;
+    }
+    img {
+        width: 75%;
+    }
+    .routes {
+        width: 75%;
+    }
+}

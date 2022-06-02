@@ -1,0 +1,92 @@
+<div class="container-fluid bg-light overflow-hidden">
+    <div class="row">
+
+        <div class="col-2 px-0">
+            <app-sidebar></app-sidebar>
+        </div>
+
+        <div class="col-10 px-0">
+            <ng-container *ngIf="user.rol == 1; else noAdmin">
+                <div class="row d-flex m-lg-5 m-md-4 mx-3 my-4">
+
+                    <div class="search-bar2 px-1 mb-2">
+                        <input [(ngModel)]="search" class="form-control rounded px-2" type="search" placeholder="Buscar">
+                    </div>
+    
+                    <div class="col-12 filters mt-2 mb-lg-4 mb-2 p-0">
+                        <select [(ngModel)]="filterPriority" (ngModelChange)="filters($event)"
+                        class="form-select custom-select">
+                            <option *ngFor="let priority of typePriority" [value]="priority">
+                                {{ priority }}
+                            </option>
+                        </select>
+                        <select [(ngModel)]="filterEstatus" (ngModelChange)="filters($event)"
+                        class="form-select custom-select">
+                            <option *ngFor="let estatus of typeEstatus" [value]="estatus">
+                                {{ estatus }}
+                            </option>
+                        </select>
+                        <div class="col d-flex justify-content-end search-bar">
+                            <input [(ngModel)]="search" class="form-control rounded w-35 px-2" 
+                            type="search" placeholder="Buscar">
+                            <button class="btn bg-white border border-2 button-search">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+    
+                    <!-- Table -->
+                    <ng-container *ngIf="listTasks.length > 0; else noTask">
+                        <div class="task-table overflow-auto mt-4 p-0">
+                            <table class="table table-borderless bg-white border border-4 shadow-sm">
+                                <thead>
+                                    <tr class="table-info">
+                                        <th class="col-4 text-center">Titulo</th>
+                                        <th class="col-5 text-center">Descripcion</th>
+                                        <!-- <th class="col-4 text-center">Requisitos</th> -->
+                                        <th class="col-1 text-center">Prioridad</th>
+                                        <th class="col-1 text-center">Estatus</th>
+                                        <th class="col-1 text-center">Entrega</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let task of listTasks | task: search" (click)="searchTask(task.idProject)">
+                                        <td class="col-4 text-center">{{task.title}}</td>
+                                        <td class="col-5 text-center">{{task.description}}</td>
+                                        <!-- <td class="col-4 text-center">{{task.requeriments}}</td> -->
+                                        <td [ngClass]="{'text-success': task.priority == 'Bajo',
+                                        'text-warning': task.priority == 'Medio', 'text-danger': task.priority == 'Alto'}" 
+                                        class="col-1 text-center">{{task.priority}}</td>
+                                        <td class="col-1 text-center">{{task.estatus}}</td>
+                                        <td class="col-1 text-center">{{task.dueDate | date: format}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </ng-container>
+    
+                </div>
+            </ng-container>
+
+            <div class="col px-0 mt-4">
+                <app-footer></app-footer>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<ng-template #noAdmin>
+    <div class="vh-100 p-5">
+        <h1>Error 404</h1>
+        <h2>Pagina no encontrada</h2>
+    </div>
+</ng-template>
+
+<ng-template #noTask>
+    <div class="task-table mx-4 mt-3">
+        <h5>No hay ninguna tarea en la base de datos</h5>
+        <p class="py-1">Dirijase a la seccion de proyectos para agregar una tarea</p>
+    </div>
+</ng-template>

@@ -1,0 +1,117 @@
+<div class="container-fluid bg-light min-vh-100 overflow-hidden">
+    <div class="row">
+
+        <div class="col-2 px-0">
+            <app-sidebar></app-sidebar>
+        </div>
+
+        <div class="col-10 px-0">
+            <div class="row d-flex justify-content-center m-lg-5 mx-1 my-4 p-0">
+                <ng-container *ngIf="user.rol == 0; else noAdmin">
+
+                    <div class="col-12 mb-lg-4 mb-3 ms-4">
+                        <button [routerLink]="['/myTask']" class="btn btn-outline-primary"
+                        type="button">
+                        <span><i class="far fa-arrow-alt-circle-left"></i></span>
+                        Volver</button>
+                    </div>
+
+                    <div class="row d-flex justify-content-around h-100 mt-2 mb-4">
+                        <div class="col-7 task bg-white border border-3 rounded shadow-sm px-0">
+                            <h6 class="bg-info border-bottom border-2 py-1 ps-3 text-white">Detalles</h6>
+                            
+                            <div class="py-2 px-3">
+                                <h5 class="fw-bold mb-3">Titulo: {{task.title}}</h5>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p>Descripcion: {{task.description}}</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="mb-1">Prioridad: {{task.priority}}</p>
+                                        <p class="mb-1">Entrega: {{task.dueDate | date: format}}</p>
+                                        <p class="mb-1">Comentarios adicionales: {{task.commentary}}</p>
+                                    </div>
+                                    <div class="col-12 mt-lg-4 mt-2">
+                                        <p>Requerimientos: {{task.requeriments}}</p>
+                                    </div>
+                                    <!-- <p>Diagramas y documentos: {{task[0].image}}</p> -->
+                                </div>
+                            </div>
+                
+                            <ng-container *ngIf="(task.estatus == 'Terminado' && task.info) || task.info">
+                                <h6 class="bg-info border-bottom border-top border-2 py-1 ps-3 mt-3
+                                text-white">Correcciones y cambios</h6>
+                                <div class="row px-3 py-2">
+                                    <div class="col">
+                                        <p>Correcciones: {{task.info}}</p>
+                                        <!-- <p class="my-1">Evidencias: {{task.evidence}}</p> -->
+                                    </div>
+                                </div>
+                            </ng-container>
+                
+                        </div>
+
+                        <div class="col-4 bg-white border border-3 shadow-sm px-0 rounded">
+                            <h6 class="bg-info border-bottom border-3 py-1 ps-3 text-white">
+                            Datos de envio</h6>
+                            <div class="row mt-3 p-0 m-0">
+                                <form [formGroup]="taskForm" (ngSubmit)="sendTask(taskForm.value)"
+                                class="form-task">
+                                    <div *ngIf="formValid === false" class="alert alert-danger" 
+                                    role="alert">Datos incompletos</div>
+                                    <div class="col px-2">
+                                        <div class="mb-lg-4 mb-2 border-bottom border-bottom-3">
+                                            <label class="form-label">Estado actual: </label>
+                                            <span class="text-success ms-1 my-1">{{task.estatus}}</span>
+                                        </div>
+                                        <p>Nuevo estado</p>
+                                        <select formControlName="estatus" class="form-select custom-select">
+                                            <option *ngFor="let estatus of typeEstatus" [value]="estatus">
+                                                {{ estatus }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col px-2 my-3">
+                                        <label class="form-label ms-1">Comentarios</label>
+                                        <textarea class="form-control" formControlName="info" 
+                                        cols="30" rows="5"></textarea>
+                                    </div>
+                                    <!-- <div class="col my-3">
+                                        <label class="form-label ms-1">Evidencias</label>
+                                        <input type="file" formControlName="evidence" class="form-control">
+                                    </div> -->
+                                    <div class="mx-3 mb-3 float-end">
+                                        <button *ngIf="send === false; else noSend" class="btn 
+                                        btn-outline-success" type="submit">Guardar cambios</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                </ng-container>
+            </div>
+
+            <div class="col px-0">
+                <app-footer></app-footer>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<ng-template #noAdmin>
+    <div class="vh-100 p-5">
+        <h1>Error 404</h1>
+        <h2>pagina no encontrada</h2>
+    </div>
+</ng-template>
+
+<ng-template #noSend>
+    <button class="btn btn-outline-secondary" type="button" disabled>
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Guardando...
+    </button>
+</ng-template>

@@ -1,0 +1,59 @@
+<div class="container-fluid bg-light vh-100">
+    <div class="row">
+
+        <div class="col-md-7 fondo justify-content-center d-flex align-items-center">
+            <img src="https://www.iapply.io/images/stu-login.png" class="img-fluid rounded" alt="">
+        </div>
+
+        <div class="col-md-5 login d-flex align-items-center justify-content-center
+        border border-3 shadow-sm">
+            <div class="row py-4 px-5">
+                <form [formGroup]="loginForm" (ngSubmit)="login(loginForm.value)">
+                    <h4 class="text-center mb-4">Iniciar sesion</h4>
+                    <div *ngIf="loginInvalid === true && loginForm.valid == false" class="alert alert-danger my-4" role="alert">
+                        Correo o contraseñas incorrectos
+                    </div>
+                    <div class="row">
+                        <div class="col-12 my-1">
+                            <label class="form-label">Correo*</label>
+                            <input [ngClass]="{'border border-danger' : loginInvalid === true && email.errors }" 
+                            formControlName="email" class="form-control" type="email">
+                        </div>
+                        <div class="text-danger ps-4">
+                            <ng-container *ngFor="let validation of validation_messages.email">
+                                <div *ngIf="loginForm.get('email').hasError(validation.type) && 
+                                loginForm.get('email').dirty">{{validation.message}}</div>
+                            </ng-container>
+                        </div>
+                        <div class="col-12 my-1">
+                            <label class="form-label">Contraseña*</label>
+                            <input [ngClass]="{'border border-danger' : loginInvalid === true && password.errors }"
+                            formControlName="password" class="form-control"  minlength="8" type="password">
+                        </div>
+                        <div class="text-danger ps-4">
+                            <ng-container *ngFor="let validation of validation_messages.password">
+                                <div *ngIf="loginForm.get('password').hasError(validation.type) && 
+                                loginForm.get('password').dirty">{{validation.message}}</div>
+                                <div *ngIf="loginForm.get('password').hasError('minlength')">
+                                    su contraseña debe ser de al menos 8 caracteres
+                                </div>
+                            </ng-container>
+                        </div>
+                        <div class="col-12 mt-4 text-center">
+                            <button *ngIf="send === false; else noSend" class="btn button-gradient 
+                            border border-3 border-secondary w-100" type="submit">Enviar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<ng-template #noSend>
+    <button class="btn btn-outline-secondary w-100" type="button" disabled>
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Guardando...
+    </button>
+</ng-template>

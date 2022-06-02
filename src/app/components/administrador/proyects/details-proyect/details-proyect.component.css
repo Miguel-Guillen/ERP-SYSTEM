@@ -1,0 +1,36 @@
+p, span, div, h1, h2, h3, h4, h5, button, ngb-panel {
+    font-family: 'Times New Roman', Times, serif;
+}
+p, span, div, button {
+    font-size: 17px;
+}
+a:hover {
+    cursor: pointer;
+}
+.w-35 {
+    width: 35%;
+    height: auto;
+}
+.proyect-form  {
+    min-height: 80vh;
+    height: max-content;
+}
+.form-proyect .form-control {
+    border: #f0ecec solid 1px;
+    border-bottom: rgb(68, 81, 155) solid 2px;
+    background-color: #f8f8f8e8;
+}
+.form-proyect .form-select {
+    border: none;
+    border-bottom: rgb(68, 81, 155) solid 2px;
+    background-color: #f8f8f8e8;
+}
+
+@media (width < 769px){
+    p, span, div, button, ngb-panel {
+        font-size: 15.5px;
+    }
+    h5 {
+        font-size: 17px;
+    }
+}

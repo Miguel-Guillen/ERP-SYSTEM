@@ -1,0 +1,74 @@
+p, h1, h2, h3, h4, h5, span, div, th, td {
+    font-family: 'Times New Roman', Times, serif;
+}
+p, span, div, td, th, button {
+    font-size: 17px;
+}
+
+.employee-table {
+    min-height: 58vh;
+    height: max-content;
+}
+.show-desactivated {
+    border-bottom: #8a2be2 solid 2px;
+    border-radius: 0;
+}
+
+.form-employee .form-control {
+    border: #f0ecec solid 1px;
+    border-bottom: rgb(68, 81, 155) solid 2px;
+    background-color: #f8f8f8e8;
+}
+.form-employee .form-select {
+    border: none;
+    border-bottom: rgb(68, 81, 155) solid 2px;
+    background-color: #f8f8f8e8;
+}
+
+.w-35 {
+    width: 35%;
+}
+.w-45 {
+    width: 30%;
+    max-width: 200px;
+}
+
+@media (width < 1025px) {
+    .w-35 {
+        width: 45%;
+    }
+}
+
+@media (width < 769px) {
+    p, span, div, td, th, button {
+        font-size: 15.5px;
+    }
+    .button-search {
+        display: none;
+    }
+    .w-35 {
+        width: 50%;
+    }
+}
+
+@media (width < 426px) {
+    p, span, div, td, th, button {
+        font-size: 14px;
+    }
+    h4 {
+        font-size: 17px;
+    }
+    .form-employee {
+        margin: 0 10px;
+    }
+    .form-employee .col-md-6 {
+        margin-bottom: 6px;
+    }
+    .w-35 {
+        width: 100%;
+    }
+    .buttons {
+        display: flex;
+        justify-content: space-between;
+    }
+}

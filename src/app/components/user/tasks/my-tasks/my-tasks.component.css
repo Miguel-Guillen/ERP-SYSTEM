@@ -1,0 +1,43 @@
+p, span, div, h1, h2, h3, h4, h5 {
+    font-family: 'Times New Roman', Times, serif;
+}
+p, span, div {
+    font-size: 16px;
+}
+h5 {
+    font-size: 18px;
+}
+
+.task-table {
+    min-height: 58vh;
+    height: max-content;
+}
+.task:hover {
+    background-color: rgb(237, 240, 243) !important;
+    cursor: pointer;
+}
+.show-desactivated {
+    border-bottom: #8a2be2 solid 2px;
+    border-radius: 0;
+}
+.w-35 {
+    width: 35%;
+}
+
+@media (width < 769px){
+    p, span, div {
+        font-size: 15px;
+    }
+    h5 {
+        font-size: 17px;
+    }
+    h4 {
+        font-size: 20px;
+    }
+    .w-35 {
+        width: 75%;
+    }
+    .button-search {
+        display: none;
+    }
+}
